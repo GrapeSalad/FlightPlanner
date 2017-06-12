@@ -45,5 +45,24 @@ namespace FlightPlanner
       List<Flight> testList = new List<Flight>{testFlight};
       Assert.Equal(testList, result);
     }
+
+    [Fact]
+     public void Test_Save_AssignsIdToObject()
+     {
+      Flight testFlight = new Flight("4pm", "5pm", "Cancelled", 1, 1);
+       testFlight.Save();
+       int testId = testFlight.GetId();
+       int savedFlightId =Flight.GetAll()[0].GetId();
+       Assert.Equal(testId, savedFlightId);
+     }
+
+     [Fact]
+     public void Test_Find_FindsFlightInDatabase()
+     {
+      Flight testFlight = new Flight("1am", "10am", "Delayed",1 ,1);
+      testFlight.Save();
+      Flight foundFlight =Flight.Find(testFlight.GetId());
+      Assert.Equal(testFlight, foundFlight);
+     }
   }
 }

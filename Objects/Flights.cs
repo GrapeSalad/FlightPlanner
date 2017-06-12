@@ -155,5 +155,47 @@ namespace FlightPlanner.Objects
         conn.Close();
       }
     }
+
+    public static Flight Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM flights WHERE id = @FlightId", conn);
+      SqlParameter flightIdParameter = new SqlParameter();
+      flightIdParameter.ParameterName = "@FlightId";
+      flightIdParameter.Value = id.ToString();
+      cmd.Parameters.Add(flightIdParameter);
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      int foundFlightId = 0;
+      string foundFlightArrival = null;
+      string foundFlightDeparture = null;
+      string foundFlightStatus = null;
+      int foundFlightAirlineId = 0;
+      int foundFlightCityId = 0;
+      while(rdr.Read())
+      {
+        foundFlightId = rdr.GetInt32(0);
+        foundFlightArrival = rdr.GetString(1);
+        foundFlightDeparture = rdr.GetString(2);
+        foundFlightStatus = rdr.GetString(3);
+        foundFlightAirlineId = rdr.GetInt32(4);
+        foundFlightCityId = rdr.GetInt32(5);
+      }
+      Flight foundFlight = new Flight(foundFlightArrival, foundFlightDeparture, foundFlightStatus, foundFlightAirlineId, foundFlightCityId, foundFlightId);
+
+      if (rdr != null)
+     {
+       rdr.Close();
+     }
+     if (conn != null)
+     {
+       conn.Close();
+     }
+
+     return foundFlight;
+    }
+
   }
 }
