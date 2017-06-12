@@ -18,6 +18,8 @@ namespace FlightPlanner
     public void Dispose()
     {
       City.DeleteAll();
+      Airline.DeleteAll();
+      Flight.DeleteAll();
     }
 
     [Fact]
@@ -65,49 +67,60 @@ namespace FlightPlanner
       Assert.Equal(testCity, foundCity);
     }
     [Fact]
-    public void Test_AddFlight_AddsFlightToCity()
+    public void Test_If_FlightsAreSavedToCity()
     {
-      //Arrange
       City testCity = new City("PDX");
       testCity.Save();
-
       Flight testFlight = new Flight("5am", "6am", "On-Time", 1, testCity.GetId());
-      testFlight.Save();
-
+      //testFlight.Save();
       Flight testFlight2 = new Flight("7am", "8am", "On-Time", 1, testCity.GetId());
-      testFlight2.Save();
+      //testFlight2.Save();
 
-      //Act
       testCity.AddFlight(testFlight);
       testCity.AddFlight(testFlight2);
-
       List<Flight> result = testCity.GetFlights();
       List<Flight> testList = new List<Flight>{testFlight, testFlight2};
-      Console.WriteLine("result = " + result);
-      Console.WriteLine("testList = " + testList);
-      //Assert
+      // Console.WriteLine("result id: {0}, {1}", result[0].GetId(), result[1].GetId());
+      // Console.WriteLine("testlist id: {0}, {1}", testList[0].GetId(), testList[1].GetId());
+
       Assert.Equal(testList, result);
     }
     [Fact]
     public void GetFlights_ReturnsAllCityFlights_FlightList()
     {
-      //Arrange
+
       City testCity = new City("PDX");
       testCity.Save();
-
       Flight testFlight1 = new Flight("5am", "6am", "On-Time", 1, testCity.GetId());
-      testFlight1.Save();
-
+      // testFlight1.Save();
       Flight testFlight2 = new Flight("7am", "8am", "On-Time", 1, testCity.GetId());
-      testFlight2.Save();
+      // testFlight2.Save();
 
-      //Act
       testCity.AddFlight(testFlight1);
+      testCity.AddFlight(testFlight2);
       List<Flight> savedFlights = testCity.GetFlights();
-      List<Flight> testList = new List<Flight> {testFlight1};
+      List<Flight> testList = new List<Flight> {testFlight1, testFlight2};
 
-      //Assert
       Assert.Equal(testList, savedFlights);
     }
+
+    // [Fact]
+    // public void Delete_DeletesCityAssociationsFromDatabase_CityList()
+    // {
+    //   string testName = "PDX";
+    //   City testCity = new City(testName);
+    //   testCity.Save();
+    //
+    //   Flight testFlight = new Flight("5am", "6am", "On-Time", 1, testCity.GetId());
+    //   testFlight.Save();
+    //
+    //   testCity.AddFlight(testFlight);
+    //   testCity.Delete();
+    //
+    //   List<City> resultFlightCity = testFlight.GetCity();
+    //   List<City> testFlightCity = new List<City> {};
+    //
+    //   Assert.Equal(testFlightCity, resultFlightCity);
+    // }
   }
 }

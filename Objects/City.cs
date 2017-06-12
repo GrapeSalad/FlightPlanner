@@ -144,7 +144,7 @@ namespace FlightPlanner.Objects
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO flights (arrival, departure, status, airline_id, city_id) VALUES (@FlightArrival, @FlightDeparture, @FlightStatus, @AirlineId, @CityId);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO flights (arrival, departure, status, airline_id, city_id)  OUTPUT INSERTED.id VALUES (@FlightArrival, @FlightDeparture, @FlightStatus, @AirlineId, @CityId);", conn);
       SqlParameter cityIdParameter = new SqlParameter();
       cityIdParameter.ParameterName = "@CityId";
       cityIdParameter.Value = this.GetId();
@@ -170,8 +170,16 @@ namespace FlightPlanner.Objects
       airlineIdParameter.Value = newFlight.GetAirlineId();
       cmd.Parameters.Add(airlineIdParameter);
 
-      cmd.ExecuteNonQuery();
+      SqlDataReader rdr = cmd.ExecuteReader();
+      while (rdr.Read())
+      {
+        newFlight.SetId(rdr.GetInt32(0));
+      }
 
+      if (rdr != null)
+      {
+        rdr.Close();
+      }
       if (conn != null)
       {
         conn.Close();
@@ -233,6 +241,64 @@ namespace FlightPlanner.Objects
         conn.Close();
       }
       return flights;
+    }
+
+    // public List<Flight> GetFlightsByAirlineToCity()
+    // {
+    //   SqlConnection conn = DB.Connection();
+    //   conn.Open();
+    //
+    //   SqlCommand cmd = new SqlCommand("SELECT flights.* FROM airlines JOIN flights ON (airline.id = flights.airline_id) JOIN cities ON (flights.city_id = city.id) WHERE cities.id = @CityId;", conn);
+    //   SqlParameter CityIdParam = new SqlParameter();
+    //   CityIdParam.ParameterName = "@CityId";
+    //   CityIdParam.Value = this.GetId().ToString();
+    //
+    //   cmd.Parameters.Add(CityIdParam);
+    //
+    //   SqlDataReader rdr = cmd.ExecuteReader();
+    //
+    //   List<Flight> flights = new List<Flight>{};
+    //
+    //   while(rdr.Read())
+    //   {
+    //     int flightId = rdr.GetInt32(0);
+    //     string flightArrival = rdr.GetString(1);
+    //     string flightDeparture = rdr.GetString(2);
+    //     string flightStatus = rdr.GetString(3);
+    //     int flightAirlineId = rdr.GetInt32(4);
+    //     int flightCityId = rdr.GetInt32(5);
+    //     Flight foundFlight = new Flight(flightArrival, flightDeparture, flightStatus, flightAirlineId, flightCityId, flightId);
+    //     flights.Add(foundFlight);
+    //   }
+    //
+    //   if (rdr != null)
+    //   {
+    //     rdr.Close();
+    //   }
+    //   if (conn != null)
+    //   {
+    //     conn.Close();
+    //   }
+    //   return flights;
+    // }
+
+    public void Delete()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM cities WHERE id = @CityId; DELETE FROM flights WHERE city_id = @CityId;", conn);
+      SqlParameter cityIdParameter = new SqlParameter();
+      cityIdParameter.ParameterName = "@CityId";
+      cityIdParameter.Value = this.GetId();
+
+      cmd.Parameters.Add(cityIdParameter);
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
     }
   }
 }

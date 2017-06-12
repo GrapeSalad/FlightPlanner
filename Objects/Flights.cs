@@ -48,6 +48,11 @@ namespace FlightPlanner.Objects
       return _status;
     }
 
+    public void SetId(int id)
+    {
+      _id = id;
+    }
+
     public override bool Equals(System.Object otherFlight)
     {
       if (!(otherFlight is Flight))
@@ -197,5 +202,23 @@ namespace FlightPlanner.Objects
      return foundFlight;
     }
 
+    public void Delete()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM flights WHERE id = @FlightId;", conn);
+      SqlParameter flightIdParameter = new SqlParameter();
+      flightIdParameter.ParameterName = "@FlightId";
+      flightIdParameter.Value = this.GetId();
+
+      cmd.Parameters.Add(flightIdParameter);
+      cmd.ExecuteNonQuery();
+
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
   }
 }

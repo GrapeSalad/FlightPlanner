@@ -1,0 +1,25 @@
+<h2>Add a flight</h2>
+
+<form action="/flights/add" method="post">
+  <input type="text" name="arrival" placeholder="Arrival time">
+  <input type="text" name="departure" placeholder="Departure time">
+  <select name="status">
+    <option value="On-Time">On-Time</option>
+    <option value="Delayed">Delayed</option>
+    <option value="Cancelled">Cancelled</option>
+    <option value="Completed">Completed</option>
+  </select>
+  <select name="airline-id">
+    @foreach (var airline in @Model["airline"])
+    {
+      <option value="@airline.GetId()">@airline.GetName() | @airline.GetFare()</option>
+    }
+  </select>
+  <select name="city-id">
+    @foreach (var city in @Model["city"])
+    {
+      <option value="@city.GetId()">@city.GetName()</option>
+    }
+  </select>
+  <button type="submit" name="button">Submit</button>
+</form>

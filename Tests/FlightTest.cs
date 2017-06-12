@@ -18,6 +18,8 @@ namespace FlightPlanner
     public void Dispose()
     {
       Flight.DeleteAll();
+      City.DeleteAll();
+      Airline.DeleteAll();
     }
 
     [Fact]
@@ -64,5 +66,25 @@ namespace FlightPlanner
       Flight foundFlight =Flight.Find(testFlight.GetId());
       Assert.Equal(testFlight, foundFlight);
      }
+
+     [Fact]
+      public void Delete_DeletesFlightAssociationsFromDatabase_FlightList()
+      {
+
+        City testCity = new City("PDX");
+        testCity.Save();
+
+        Flight testFlight = new Flight("7pm", "9pm", "On-Time", 1, testCity.GetId());
+        testFlight.Save();
+
+        // testFlight.AddCity(testCity);
+        testFlight.Delete();
+
+        List<Flight> resultCityFlights = testCity.GetFlights();
+        List<Flight> testCityFlights = new List<Flight> {};
+
+
+        Assert.Equal(testCityFlights, resultCityFlights);
+      }
   }
 }
